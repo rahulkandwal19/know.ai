@@ -1,0 +1,14 @@
+services:
+  sagar-ai:
+    container_name: sagar-ai-server
+    build: ./sagar_server
+    ports:
+      - "8000:8000"
+    depends_on:
+      - model-server-sagar-tiny
+
+  model-server-sagar-tiny:
+    container_name: model-server-sagar-tiny
+    build: ./sagar_model/sagar_tiny
+    ports:
+      - "8001:8001"
