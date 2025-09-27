@@ -68,7 +68,7 @@ async def generate_sagarAI_tiny(context: str,question: str):
                     token = json.loads(message)
                     yield token
                 except json.JSONDecodeError:
-                    yield {"type": "token", "data": message}
+                    yield {"type": "token", "message": message}
 
     except Exception as e:
         yield {"type": "error", "message": str(e)}
@@ -87,7 +87,7 @@ async def test(websocket: WebSocket):
         while True:
             message = await websocket.receive_text()
             print(f" [{client_id}] Received: {message}")
-            await manager.send_to_client(client_id, f'{{"type":"echo","data":"{message}"}}')
+            await manager.send_to_client(client_id, f'{{"type":"echo","message":"{message}"}}')
     finally:
         manager.disconnect(client_id)
 
@@ -106,13 +106,13 @@ async def sagar_ai(websocket: WebSocket):
                 question = await asyncio.wait_for(websocket.receive_text(), timeout=300)
                 context = "Exploring about Indian EEZ, ocean scientific surver and marine studies"
             except asyncio.TimeoutError:
-                await manager.send_to_client(client_id, '{"type":"timeout"}')
+                await manager.send_to_client(client_id, '{"type":"timeout","message":"Idle Till 300Sec"}')
                 continue
             
             try:
                 async for chunk in generate_sagarAI_tiny(context,question):
-                    await manager.send_to_client(client_id, f'{{"type":"token","data":"{chunk}"}}')
-                await manager.send_to_client(client_id, '{"type":"done"}')
+                    await manager.send_to_client(client_id, json.dumps(chunk))
+                await manager.send_to_client(client_id, '{"type":"done","message":"done"}')
             except Exception as e:
                 await manager.send_to_client(client_id, f'{{"type":"error","message":"{str(e)}"}}')
     finally:

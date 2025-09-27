@@ -159,14 +159,13 @@
     ws.onmessage = function(event) {
       try {
         const msg = JSON.parse(event.data);
-
         switch (msg.type) {
           case "id":
             clientId = msg.client_id;
             addMessage(`🆔 Assigned Client ID: ${clientId}`, "status");
             break;
           case "token":
-            addMessage(`🧠 ${msg.data}`, "user");
+            addMessage(`🧠 ${msg.message}`, "user");
             break;
           case "done":
             addMessage("✅ Response complete.", "status");
