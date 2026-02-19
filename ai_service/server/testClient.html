@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Know AI Test Client</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style> 
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .chat-box {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .section {
+      margin-bottom: 2rem;
+    }
+
+    .row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    button {
+      width: 100%;
+      max-width: 120px;
+      align-self: flex-end;
+      padding: 0.6rem;
+      background-color: #0078D4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 1rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 4px;
+      word-wrap: break-word;
+    }
+
+    .user-msg {
+      background: #e6f0ff;
+    }
+
+    .system-msg {
+      background: #ffe6e6;
+      font-style: italic;
+      color: #a33;
+    }
+
+    .status-msg {
+      background: #e6ffe6;
+      font-style: italic;
+      color: #2a7;
+    }
+
+    @media (max-width: 600px) {
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2> Know AI - Test Client</h2>
+  <div class="chat-box">
+
+    <div class="section">
+      <label for="endpoint">Connect to Endpoint:</label>
+      <div class="row">
+        <input id="endpoint" type="text" placeholder="e.g. askKnowAI">
+        <button onclick="connect()">Connect</button>
+      </div>
+    </div>
+
+
+    <div class="section">
+      <label for="input">Send a Message:</label>
+      <div class="row">
+        <textarea id="input" placeholder="Type your message here..."></textarea>
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+
+    <ul id="messages"></ul>
+  </div>
+
+  
+  <script>
+  let ws = null;
+  let clientId = null;
+
+  function connect() {
+    const endpoint = document.getElementById("endpoint").value.trim();
+    if (!endpoint) {
+      addMessage("Please enter a valid endpoint.", "system");
+      return;
+    }
+
+    ws = new WebSocket(`ws://localhost:8000/${endpoint}`);
+
+    ws.onopen = () => {
+      addMessage(`✅ Connected to /${endpoint}`, "status");
+    };
+
+    ws.onmessage = function(event) {
+      try {
+        const msg = JSON.parse(event.data);
+        switch (msg.type) {
+          case "id":
+            clientId = msg.client_id;
+            addMessage(`🆔 Assigned Client ID: ${clientId}`, "status");
+            break;
+          case "token":
+            addMessage(`🧠 ${msg.message}`, "user");
+            break;
+          case "done":
+            addMessage("✅ Response complete.", "status");
+            break;
+          case "heartbeat":
+            addMessage("💓 Heartbeat received.", "status");
+            break;
+          case "timeout":
+            addMessage("⏱️ Session timed out due to inactivity.", "system");
+            break;
+          case "error":
+            addMessage(`❌ Error: ${msg.message}`, "system");
+            break;
+          case "echo":
+            addMessage(`🪞 Echo: ${msg.data}`, "user");
+            break;
+          default:
+            addMessage(`📦 Unknown message type: ${event.data}`, "system");
+        }
+      } catch (e) {
+        // Fallback for unstructured messages
+        addMessage("🧠 Server: " + event.data, "user");
+      }
+    };
+
+    ws.onerror = function() {
+      addMessage("❌ Connection error.", "system");
+    };
+
+    ws.onclose = function() {
+      addMessage("🔒 Connection closed.", "system");
+    };
+  }
+
+  function sendMessage() {
+    const input = document.getElementById("input");
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+      addMessage("WebSocket is not connected.", "system");
+      return;
+    }
+    ws.send(input.value);
+    addMessage("🗣️ You: " + input.value, "user");
+    input.value = "";
+  }
+
+  function addMessage(text, type) {
+    const li = document.createElement("li");
+    li.textContent = text;
+    li.className = type === "system" ? "system-msg" :
+                   type === "status" ? "status-msg" : "user-msg";
+    document.getElementById("messages").appendChild(li);
+  }
+</script>
+</body>
+</html>
