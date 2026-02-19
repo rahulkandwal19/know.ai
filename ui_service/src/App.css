@@ -1,0 +1,33 @@
+:root {
+  --sidebar-w: 260px;        /* expanded */
+  --sidebar-w-collapsed: 72px;
+}
+
+.app-container {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: var(--sidebar-w) 1fr; /* default expanded */
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  transition: grid-template-columns 180ms ease; /* smooth */
+}
+
+/* When collapsed, shrink the first track */
+.app-container.sidebar-collapsed {
+  grid-template-columns: var(--sidebar-w-collapsed) 1fr;
+}
+
+/* Sidebar itself adopts the same width */
+.sidebar-container {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  transition: width 180ms ease;
+}
+.app-container.sidebar-collapsed .sidebar-container {
+  width: var(--sidebar-w-collapsed);
+  min-width: var(--sidebar-w-collapsed);
+}
+
+/* Main needs min-width:0 so it can expand/shrink properly */
+main { min-width: 0; }

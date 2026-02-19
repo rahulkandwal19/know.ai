@@ -1,1 +1,0 @@
-sagarTiny : https://huggingface.co/TheBloke/Tinyllama-2-1b-miniguanaco-GGUF

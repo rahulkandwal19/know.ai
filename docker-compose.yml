@@ -1,14 +1,25 @@
 services:
-  sagar-ai:
-    container_name: sagar-ai-server
-    build: ./sagar_server
+  ui-client:
+    container_name: ui-client
+    build: ./ui_service
+    environment:
+      NODE_ENV: development
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./ui_service:/app
+    command: npm run dev -- --host
+
+  ai-server:
+    container_name: ai-server
+    build: ./ai_service/server
     ports:
       - "8000:8000"
     depends_on:
-      - model-server-sagar-tiny
+      - model-server-tiny
 
-  model-server-sagar-tiny:
-    container_name: model-server-sagar-tiny
-    build: ./sagar_model/sagar_tiny
+  model-server-tiny:
+    container_name: model-server-tiny
+    build: ./ai_service/model/tiny
     ports:
       - "8001:8001"
