@@ -1,0 +1,95 @@
+@import 'tailwindcss';
+/* Custom styles - no need for @tailwind directives anymore */
+@theme {
+  /* Custom color palette */
+  --color-deep-blue: #0a2a43;
+  --color-ocean-teal: #1d566e;
+  --color-marine-blue: #2a7a9d;
+  --color-seafoam: #7fdbda;
+  --color-coral: #ff7a6a;
+  --color-seagrass: #2a7a9d;
+  /*--color-seagrass: #2ca58d;*/
+  --color-light-blue: #e6f4f9;
+  --color-light-gray: #f5f7fa;
+  --color-medium-gray: #e0e6ed;
+  --color-dark-gray: #5c6b7e;
+  --color-text-dark: #1a3b5d;
+}
+
+/* Custom component classes */
+.nav-item {
+  @apply text-dark-gray font-medium transition-colors duration-300 cursor-pointer py-2 relative;
+}
+
+.nav-item:hover {
+  @apply text-marine-blue;
+}
+
+.nav-item.active {
+  @apply text-marine-blue;
+}
+
+.nav-item.active::after {
+  content: '';
+  @apply absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-seagrass to-marine-blue rounded-full;
+}
+
+.metric-card {
+  @apply bg-white rounded-lg shadow-lg p-6 flex flex-col gap-3 transition-all duration-300;
+}
+
+.metric-card:hover {
+  @apply transform -translate-y-1 shadow-xl;
+}
+
+.btn-primary {
+  @apply bg-gradient-to-r from-marine-blue to-seagrass text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2;
+}
+
+.btn-primary:hover {
+  @apply transform -translate-y-1 shadow-lg;
+}
+
+/* Custom utilities */
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-marine-blue), var(--color-seagrass));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ocean-bg {
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(42, 147, 213, 0.05) 0%, transparent 20%),
+    radial-gradient(circle at 90% 80%, rgba(44, 165, 141, 0.05) 0%, transparent 20%);
+}
+
+/* Sidebar specific styles */
+.sidebar-item {
+  @apply flex items-center gap-3 px-3 py-3 text-gray-600 transition-all duration-300 cursor-pointer rounded-lg;
+}
+
+.sidebar-item:hover {
+  @apply bg-light-blue text-marine-blue;
+}
+
+.sidebar-item.active {
+  @apply bg-gradient-to-r from-blue-50 to-seagrass text-marine-blue border-l-4 border-seagrass;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-marine-blue), var(--color-seagrass));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Custom shadows */
+.shadow-custom-light {
+  box-shadow: 0 4px 12px rgba(10, 42, 67, 0.08);
+}
+@layer utilities {
+  .text-cyan-azure {
+    @apply bg-gradient-to-r from-[#117766] to-[#378fe2] bg-clip-text text-transparent;
+  }
+}
