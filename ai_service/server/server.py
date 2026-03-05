@@ -1,4 +1,5 @@
 # Importing Required Modules
+import uvicorn
 import json
 import uuid
 import asyncio
@@ -55,7 +56,7 @@ async def send_heartbeat(connection_id: str, interval: int = 30):
 
 # Connect with LLM Server (Tiny Model) and stream tokes as genereted  
 async def generate_knowAI_tiny(context: str,question: str):
-    URI = "ws://model-server-tiny:8001/generate"
+    URI = "ws://localhost:8001/generate"
     try:
         async with websockets.connect(URI) as LLM_CONNECTION:
             await LLM_CONNECTION.send(json.dumps({
@@ -122,3 +123,5 @@ async def ask_knowAI(websocket: WebSocket):
         heartbeat_task.cancel()
         manager.disconnect(client_id)
 #------------------------------------------------------------------------------------------
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
